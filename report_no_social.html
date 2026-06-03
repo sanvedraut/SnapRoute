@@ -1,0 +1,224 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+    * { box-sizing: border-box; }
+    @page {
+        size: A4;
+        margin: 20mm 15mm;
+        background-color: #fafbfc;
+    }
+    body {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        color: #24292e;
+        font-size: 10.5pt;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+    }
+    .header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #ea4aaa; /* Pink/Purple accent */
+    }
+    h1 {
+        color: #24292e;
+        font-size: 24pt;
+        margin-bottom: 5px;
+        font-weight: 600;
+    }
+    .subtitle {
+        font-size: 12pt;
+        color: #586069;
+        margin-bottom: 5px;
+    }
+    .metadata-box {
+        background-color: #f6f8fa;
+        border: 1px solid #e1e4e8;
+        border-left: 4px solid #0366d6;
+        border-radius: 4px;
+        padding: 12px 15px;
+        margin-bottom: 25px;
+    }
+    .metadata-box p { margin: 6px 0; font-size: 10pt; }
+    h2 {
+        font-size: 15pt;
+        color: #24292e;
+        border-bottom: 1px solid #eaecef;
+        padding-bottom: 6px;
+        margin-top: 30px;
+        margin-bottom: 15px;
+        page-break-after: avoid;
+    }
+    h3 {
+        font-size: 12.5pt;
+        color: #24292e;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        page-break-after: avoid;
+    }
+    p { margin-top: 0; margin-bottom: 12px; }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 15px 0;
+    }
+    th, td {
+        border: 1px solid #dfe2e5;
+        padding: 8px 12px;
+        text-align: left;
+        font-size: 10pt;
+    }
+    th {
+        background-color: #f6f8fa;
+        font-weight: 600;
+        color: #24292e;
+    }
+    tr { page-break-inside: avoid; }
+    code {
+        background-color: rgba(27,31,35,0.05);
+        border-radius: 3px;
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        font-size: 90%;
+        padding: 0.2em 0.4em;
+        color: #d73a49;
+    }
+    .flowchart {
+        background-color: #24292e;
+        color: #f6f8fa;
+        border-radius: 6px;
+        padding: 15px;
+        font-family: "SFMono-Regular", Consolas, monospace;
+        white-space: pre-wrap;
+        font-size: 9pt;
+        line-height: 1.4;
+        margin: 15px 0;
+    }
+    ul, ol { padding-left: 25px; margin-top: 0; margin-bottom: 15px; }
+    li { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+    <div class="header">
+        <h1>SnapRoute</h1>
+        <div class="subtitle">Technical Project Report</div>
+    </div>
+
+    <div class="metadata-box">
+        <p><strong>Category:</strong> Windows Desktop Utility (Screen Capture, Optical Character Recognition, and Visual Search Routing)</p>
+        <p><strong>Language/Framework:</strong> Python 3 + PyQt6</p>
+        <p><strong>Distribution Model:</strong> Standalone, Portable Windows Executable (<code>.exe</code>)</p>
+    </div>
+
+    <h2>1. Executive Summary</h2>
+    <p><strong>SnapRoute</strong> is a premium, ultra-lightweight, 100% portable screen cropping and text recognition (OCR) utility. Triggered by a global hotkey, it freezes the display with a cinematic fade-in, allows the user to crop any region with a glowing neon border, and provides an instant HUD (Heads-Up Display) overlay. The HUD smart-routes the selection: copying text or images to the clipboard, launching Google searches for text, or uploading graphics to a secure, ephemeral host to trigger a Google Lens reverse visual search.</p>
+    <p>SnapRoute is designed with an emphasis on <strong>zero-dependency portability</strong> (fully bundling the Tesseract-OCR binary engine) and <strong>premium UX aesthetics</strong> (fluid hardware-accelerated opacity animations, zero layout-shifting jitter).</p>
+
+    <h2>2. Key Product Features</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Feature</th>
+                <th>Description</th>
+                <th>Engineering Implementation</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Cinematic Dim Fade-in</strong></td>
+                <td>On trigger, the display freezes and dim-fades into a dark navy translucent overlay.</td>
+                <td>Multi-threaded frame grabber with a <code>QTimer</code>-driven alpha increment loop (80 FPS).</td>
+            </tr>
+            <tr>
+                <td><strong>High-Visibility Cursor</strong></td>
+                <td>Custom neon-emerald crosshair target with dark drop-shadows for visibility on any background.</td>
+                <td>Pre-baked 36x36 transparent <code>QPixmap</code> drawn with dual-color <code>QPainter</code> layout.</td>
+            </tr>
+            <tr>
+                <td><strong>Dynamic Glassmorphic HUD</strong></td>
+                <td>Translucent HUD dock overlay displaying context-aware action buttons.</td>
+                <td>Custom frameless <code>QWidget</code> with translucent backgrounds and HSL glassmorphism styles.</td>
+            </tr>
+            <tr>
+                <td><strong>Context-Aware Smart Routing</strong></td>
+                <td>Automatically detects readable characters and adjusts HUD actions dynamically.</td>
+                <td>OCR characters are evaluated. If &ge; 2 characters are found, "Search Text" is enabled and Copy label changes.</td>
+            </tr>
+            <tr>
+                <td><strong>Uguu-First Upload</strong></td>
+                <td>Sequentially attempts file uploads to unblocked direct image hosts to trigger Google Lens.</td>
+                <td>Asynchronous <code>QThread</code> utilizing Uguu.se, Catbox.moe, and Pixeldrain.com.</td>
+            </tr>
+            <tr>
+                <td><strong>Zero-Configuration Portability</strong></td>
+                <td>Single executable delivery with no Python runtime or external installations required.</td>
+                <td>PyInstaller bundling with portable <code>Tesseract-OCR</code> asset folder mappings.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>3. System Architecture & Workflows</h2>
+    <p>SnapRoute is architected to keep the main GUI thread completely fluid and responsive (0ms delay) by offloading blocking operations (OCR, Network Uploads, Keyboard Hook monitoring) to background threads.</p>
+    
+    <h3>Execution Flow</h3>
+    <div class="flowchart">
+[Global Hotkey: Ctrl+Shift+S]
+ &#9492;&#9472;&#10148; (Thread-safe queue callback) Ignite Sequence
+      &#9492;&#9472;&#10148; Screen Capture & Overlay Launch
+           &#9500;&#9472;&#10148; (QTimer 12ms) Cinematic Background Dim Fade-in
+           &#9492;&#9472;&#10148; (Mouse Press & Drag) Draw Glowing Neon Selection Box
+                &#9492;&#9472;&#10148; (Mouse Release) Mount HUD Overlay & Save Crop
+                     &#9500;&#9472;&#10148; (Spawn Thread 1) OCRWorker text extraction
+                     &#9474;    &#9492;&#9472;&#10148; (Finished) Enable Text Search / Copy Label
+                     &#9492;&#9472;&#10148; (Instant Display) HUD Action Menu
+                          &#9500;&#9472;&#10148; [Click: Copy] &rarr; Clipboard Action
+                          &#9500;&#9472;&#10148; [Click: Search Text] &rarr; Google Search
+                          &#9492;&#9472;&#10148; [Click: Search Image] &rarr; (Thread 2) UploadWorker
+                               &#9492;&#9472;&#10148; (Finished) Google Lens uploadbyurl</div>
+
+    <h3>3.1 Core Components</h3>
+    <ol>
+        <li><strong>System Tray Daemon (<code>main.py</code>):</strong> Starts the application event loop, creates the taskbar tray menu, triggers the startup splash animation, and spawns the global hotkey listener.</li>
+        <li><strong>Keyboard Polling Manager:</strong> Monitors a thread-safe <code>queue.Queue</code> from a background thread to intercept <code>Ctrl + Shift + S</code> triggers without blocking the main Qt thread.</li>
+        <li><strong>Screen Overlay UI (<code>box_search.py</code>):</strong> Creates the frameless fullscreen window, captures the primary display screenshot, runs drawing/painting cycles, and controls HUD positioning.</li>
+        <li><strong>OCR Worker Thread (<code>OCRWorker</code>):</strong> Runs <code>pytesseract</code> image-to-string operations on the cropped PNG in the background.</li>
+        <li><strong>Upload Worker Thread (<code>UploadWorker</code>):</strong> Uploads the image to anonymous hosts sequentially using standard Python libraries to prevent main window freeze.</li>
+    </ol>
+
+    <h2>4. Key Engineering Challenges & Solutions</h2>
+    
+    <h3>4.1 Windows High-DPI Display Scaling Mismatch</h3>
+    <ul>
+        <li><strong>The Problem:</strong> On high-resolution displays (4K/2K) with Windows scaling active (e.g., 125% or 150%), coordinates returned by mouse events are in <strong>logical pixels</strong>, while screenshot coordinates are captured in <strong>physical pixels</strong>. Manually multiplying logical coordinates by display scaling factors caused a double-scaling bug, yielding blank/offset crops.</li>
+        <li><strong>The Solution:</strong> We removed manual DPI multipliers and mapped selection bounds directly. PyQt6's <code>QPixmap.copy</code> automatically handles logical-to-physical coordinate mappings natively. By passing coordinates cleanly without scaling, crops became 100% pixel-perfect.</li>
+    </ul>
+
+    <h3>4.2 ISP/DNS-Level Blocking of Image Hosts</h3>
+    <ul>
+        <li><strong>The Problem:</strong> Direct visual search with Google Lens requires uploading the cropped region to a public URL. Popular image hosts (like Catbox or Pixeldrain) are blocked at the DNS/ISP level by major providers in certain countries (like Jio and Airtel in India), causing uploads to time out.</li>
+        <li><strong>The Solution:</strong> We designed a multi-host, sequential upload worker. It uses <strong>Uguu.se</strong> (an open-source, keyless developer host that is unblocked globally and deletes files after 24 hours) as the primary target. If Uguu fails, the thread automatically falls back to Catbox.moe, and then Pixeldrain.com, ensuring global search reliability.</li>
+    </ul>
+
+    <h3>4.3 Jitter and Reflow of interactive HUD Buttons</h3>
+    <ul>
+        <li><strong>The Problem:</strong> When OCR finished asynchronously in the background, the HUD dynamically resized and re-centered itself to accommodate the new "Search Text" button. This caused the HUD window to jump on Windows, and shifted buttons right out from under the user's cursor as they moved their mouse to click.</li>
+        <li><strong>The Solution:</strong> The HUD was redesigned with a static, fixed width (<code>440px</code>). All buttons remain in fixed coordinates. While OCR runs, the "Search Text" button is placed in an elegant, low-opacity <strong>disabled state</strong>. Once OCR completes, the button is simply enabled, creating a lag-free, non-shifting state transition.</li>
+    </ul>
+
+    <h3>4.4 Stays-on-Top Window Hierarchy Conflict</h3>
+    <ul>
+        <li><strong>The Problem:</strong> Triggering the hotkey immediately after launching caused the stays-on-top Welcome splash window to overlap and conflict with the stays-on-top screen crop overlay window.</li>
+        <li><strong>The Solution:</strong> Modified the startup logic to detect if the splash window is still active during a hotkey trigger. If so, it instantly closes the splash window, avoiding coordinate and window-level overlap conflicts.</li>
+    </ul>
+
+    <h2>5. UI/UX Design & Aesthetic Specifications</h2>
+    <p>SnapRoute implements modern web design principles inside a native Windows desktop environment:</p>
+    <ul>
+        <li><strong>Glassmorphism:</strong> HUD containers feature translucent dark backgrounds (<code>rgba(12, 12, 20, 245)</code>) combined with neon-emerald neon borders (<code>rgba(0, 255, 136, 200)</code>).</li>
+        <li><strong>Multi-Layered Glow Borders:</strong> The selection crop rectangle features a three-layer paint style: a wide translucent outer glow (8px), a medium accent glow (4px), and a solid ultra-bright core (2px).</li>
+        <li><strong>Opacity Animations:</strong> Utilizing <code>QPropertyAnimation</code> on the widget's <code>windowOpacity</code> property, the HUD glides onto the screen with a smooth <code>180ms</code> fade-in, and closes with a clean <code>150ms</code> fade-out.</li>
+    </ul>
+</body>
+</html>

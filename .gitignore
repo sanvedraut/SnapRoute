@@ -1,0 +1,13 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Executables (exceed GitHub's 100MB limit; should be uploaded to GitHub Releases)
+*.exe
+dist/
+
+# Temporary files
+temp_crop.png
+temp_upload.png
+test.png
+test_run.py
