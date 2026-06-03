@@ -31,7 +31,7 @@
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/SnapRoute.git
+   git clone https://github.com/sanvedraut/SnapRoute.git
    cd SnapRoute
    ```
 
@@ -67,3 +67,17 @@ The compiled standalone executable will be located in the `dist/` directory.
 * **Trigger Capture:** `Ctrl + Shift + S` (Global background hook)
 * **Cancel Capture:** `Escape` key
 * **Exit Daemon:** Right-click the neon green target icon in your System Tray and select **Quit**.
+
+---
+
+## 🤝 Open Source & Contributions Welcome!
+
+SnapRoute was built to help people search their screens faster and easier without being blocked by regional ISP blocks or heavy software installations. It is **100% free and open-source**.
+
+We would love your help making it even better! If you want to contribute, feel free to:
+* 🐛 Report bugs or submit feature ideas in the **Issues** tab.
+* 🖥️ Help port SnapRoute to **macOS** and **Linux**.
+* 🎨 Suggest new UI aesthetics or smooth transition effects.
+* 🔧 Improve the image upload fallback pipeline.
+
+Let's build a clean, helper utility together! Check out the [Issues](https://github.com/sanvedraut/SnapRoute/issues) page to get started.
